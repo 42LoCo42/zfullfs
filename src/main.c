@@ -112,5 +112,11 @@ int main(int argc, char** argv) {
 		"-oallow_other",
 		mountpoint,
 	};
-	return fuse_main(arrlen(args), (char**) args, &ops, NULL);
+
+	return fuse_main(
+		arrlen(args),  //
+		(char**) args, //
+		&ops,          //
+		NULL           //
+	);
 }
