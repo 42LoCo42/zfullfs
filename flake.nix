@@ -4,7 +4,7 @@
       let pkgs = import nixpkgs { inherit system; }; in rec {
         packages.default = pkgs.stdenv.mkDerivation {
           pname = "zfullfs";
-          version = "1";
+          version = "1.0.1";
           src = ./.;
 
           nativeBuildInputs = with pkgs; [

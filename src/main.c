@@ -106,6 +106,11 @@ int main(int argc, char** argv) {
 		.statfs  = my_statfs,
 	};
 
-	const char* args[] = {program_name, "-f", mountpoint};
+	const char* args[] = {
+		program_name,
+		"-f",
+		"-oallow_other",
+		mountpoint,
+	};
 	return fuse_main(arrlen(args), (char**) args, &ops, NULL);
 }
