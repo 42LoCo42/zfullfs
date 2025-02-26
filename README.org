@@ -1,0 +1,19 @@
+* zfullfs
+Tiny FUSE filesystem that reports the total size & allocation of a ZFS pool.
+Useful for providing data to disk status widgets that don't understand ZFS.
+
+Usage: =zfullfs <pool> <mountpoint>=
+
+#+begin_src shell
+  $ zfullfs rpool /full
+  # runs in foreground, switch to different terminal...
+
+  $ df -h /full
+  Filesystem  Size   Used  Avail Use% Mounted on
+  zfullfs     928G   106G   823G  12% /full
+  # df always rounds up, therefore size is slightly too big
+
+  $ zpool list -o name,size,alloc,free rpool
+  NAME        SIZE  ALLOC   FREE
+  rpool       928G   105G   823G
+#+end_src
