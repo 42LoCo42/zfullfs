@@ -18,22 +18,27 @@
 
 #define shift(argc, argv) (assert(argc > 0), argc--, *argv++)
 
-static libzfs_handle_t* zfs  = NULL;
-static zpool_handle_t*  pool = NULL;
+static libzfs_handle_t* zfs = NULL;
+
+static char* pool_name = NULL;
 
 static uint64_t pool_alloc = 0;
 static uint64_t pool_free  = 0;
 static uint64_t pool_size  = 0;
 
 static void cleanup(void) {
-	if(pool != NULL) zpool_close(pool);
 	if(zfs != NULL) libzfs_fini(zfs);
 }
 
 static void refresh() {
+	zpool_handle_t* pool = zpool_open(zfs, pool_name);
+	if(pool == NULL) die("zpool_open %s", pool_name);
+
 	pool_alloc = zpool_get_prop_int(pool, ZPOOL_PROP_ALLOCATED, NULL);
 	pool_size  = zpool_get_prop_int(pool, ZPOOL_PROP_SIZE, NULL);
 	pool_free  = pool_size - pool_alloc;
+
+	zpool_close(pool);
 }
 
 static int my_getattr(
@@ -91,14 +96,11 @@ int main(int argc, char** argv) {
 	const char* program_name = shift(argc, argv);
 
 	if(argc != 2) errx(1, "Usage: %s <pool> <mountpoint>", program_name);
-	const char* pool_name  = shift(argc, argv);
+	pool_name              = shift(argc, argv);
 	const char* mountpoint = shift(argc, argv);
 
 	zfs = libzfs_init();
 	if(zfs == NULL) die("libzfs_init");
-
-	pool = zpool_open(zfs, pool_name);
-	if(pool == NULL) die("zpool_open %s", pool_name);
 
 	struct fuse_operations ops = {
 		.getattr = my_getattr,
